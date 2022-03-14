@@ -1,0 +1,46 @@
+{% extends 'fundtracker/header.html' %}
+{% block main%}
+<div class="content-wrapper">
+    <div class="col-md-5" style="margin:auto;">
+        <div class="card card-dark">
+        <div class="card-header">
+        <h3 class="card-title">Add Contractor</h3>
+        </div>
+        
+        
+        <form action="" method="post" >
+            {% csrf_token %} 
+        <div class="card-body">
+        <div class="form-group">
+        <label for="name">Enter Name</label>
+        <input type="text" class="form-control" name="name" id="name" placeholder="Enter Name">
+        </div>
+        <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" class="form-control" name="email" id="email" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <label for="name">select Tags</label>
+            <select class="form-control" name="tags" id="tags" placeholder="Enter Name" multiple>
+                <option>Maharashtra</option>
+                <option>Pune</option>
+                <option>Kolhapur</option>
+            </select>
+            </div>
+
+        
+        </div>
+        
+        
+        <div class="card-footer">
+        <button type="submit" class="btn btn-dark">Add Contractor</button>
+        </div>
+        </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

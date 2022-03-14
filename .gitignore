@@ -1,1 +1,2 @@
-Blochchain/venv/*
+venv
+__pycache__

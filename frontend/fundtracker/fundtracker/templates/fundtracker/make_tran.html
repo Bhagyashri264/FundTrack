@@ -1,0 +1,47 @@
+{% extends 'fundtracker/header.html' %}
+{% block main%}
+<div class="content-wrapper">
+    <div class="col-md-5" style="margin:auto;">
+        <div class="card card-dark">
+        <div class="card-header">
+        <h3 class="card-title">Make Transactions</h3>
+        </div>
+        
+        
+        <form action="" method="post" >
+            {% csrf_token %} 
+        <div class="card-body">
+        
+        <div class="form-group">
+        <label for="email">Email address of reciever</label>
+        <input type="email" class="form-control" name="email" id="email" placeholder="Enter email">
+        </div>
+        <div class="form-group">
+            <label for="desp">Enter Descption</label>
+            <input type="text" class="form-control" name="desp" id="desp" placeholder="Enter Descption">
+            </div>
+            <div class="form-group">
+                <label for="amount">Enter Amount</label>
+                <input type="number" class="form-control" name="amount" id="amount" placeholder="Enter Amount">
+                </div>
+        <div class="form-group">
+            <label for="name">select Tags</label>
+            <select class="form-control" name="tags" id="tags" placeholder="Enter Name" multiple>
+                <option>Maharashtra</option>
+                <option>Pune</option>
+                <option>Kolhapur</option>
+            </select>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="gensis" name="gensis">
+                <label class="form-check-label" for="gensis">Gensis Block</label>
+                </div>
+        </div>
+        <div class="card-footer">
+        <button type="submit" class="btn btn-dark">Submit</button>
+        </div>
+        </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
