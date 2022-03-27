@@ -7,3 +7,7 @@ class block_struct(BaseModel):
     amount:int
     desp:str
     tags:List[str]
+
+class otp_struct(BaseModel):
+    otp:int
+    email:str

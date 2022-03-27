@@ -27,5 +27,6 @@ urlpatterns = [
     path("makeTransaction/",views.make_tran,name="maketran"),
     path("addCont/",views.addCont,name="addcont"),
     path("viewTran/",views.view_tran,name="viewtran"),
-    path("analysis/",views.analysis,name="analysis") 
-    ]
+    path("analysis/",views.analysis,name="analysis"),
+    path("guest/",views.guest_login,name="guest")
+]

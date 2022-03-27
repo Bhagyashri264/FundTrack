@@ -1,7 +1,10 @@
+import imp
 from fastapi import FastAPI
-from schemas import block_struct
+from schemas import block_struct,otp_struct
 from Blockchain import Block,Blockchain
 import datetime
+import random
+from send_email import send_email_async
 
 
 app = FastAPI()
@@ -31,3 +34,8 @@ def Add_transaction(request:block_struct):
     obj = Blockchain()
     res = obj.add_transaction(Block_obj,request.tags)
     return {"body":res}
+
+@app.post("/sendotp")
+async def sendotp(request:otp_struct):
+    await send_email_async(subject="Verify your email",email_to=request.email,body_e={"Title":"Verify Your OTP","otp":str(request.otp)})
+    return {"otp":"1"}

@@ -1,3 +1,5 @@
+from http.client import HTTPResponse
+from multiprocessing import context
 from multiprocessing.connection import wait
 from re import template
 from django.http import HttpResponse
@@ -7,7 +9,7 @@ import requests
 from bson.objectid import ObjectId
 from . import db
 from . import hashing
-
+import random
 
 def index(request):
     return HttpResponse("Hiiiii")
@@ -180,4 +182,33 @@ def view_tran(request):
         return redirect('login')
 
 
-  
+def guest_login(request):
+    if request.POST:
+        data=dict(request.POST)
+        print(data)
+        print(request.session["otp"])
+        if "otp" in data.keys():
+            if str(data["otp"][0])==str(request.session["otp"]):
+                return render(request,"fundtracker/guest_home.html")
+            else:
+                return render(request,"fundtracker/guest.html")
+        else:
+            email=data["email"][0]
+            otp=random.randint(100000,999999)
+            request.session["otp"]=otp
+            body={
+                "email": email,
+                "otp": otp
+                }
+            headers={
+                "content-type":"application/json",
+                "accept": "application/json"
+            }
+            res = requests.post("http://127.0.0.1:8080/sendotp",json=body,headers=headers)
+            context={
+                "otp":"something",
+                "email":email
+            }
+            return render(request,"fundtracker/guest.html",context)
+    else:
+        return render(request,"fundtracker/guest.html")
