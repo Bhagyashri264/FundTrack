@@ -12,6 +12,11 @@ from . import hashing
 def index(request):
     return HttpResponse("Hiiiii")
 
+def analysis():
+    
+    return render('fundtracker/analysis.html')
+
+
 def get_user_data(request):
     email=request.session["email"]
     user = db.users.find_one({"email": {"$eq": email}})
@@ -65,13 +70,32 @@ def add_user(request):
                 'email':data["email"][0],
                 "password":hashing.create_hash(data["password"][0]),
                 "role":data["role"][0],
-                "tags":data["tags"],
+                "state":data["state"][0],
+                "district":data["district"][0],
                 "wallet":0
             })
             context=get_user_data(request)
+            context["users"]=[]
+            data=db.users.find()
+            for i in data:
+                temp_data={}
+                temp_data["name"]=i["name"]
+                temp_data["email"]=i["email"]
+                temp_data["state"]=i["state"]
+                temp_data["district"]=i["district"]
+                context["users"].append(temp_data)
             return render(request,'fundtracker/add_admin_sub.html',context)
         else:
             context=get_user_data(request)
+            context["users"]=[]
+            data=db.users.find()
+            for i in data:
+                temp_data={}
+                temp_data["name"]=i["name"]
+                temp_data["email"]=i["email"]
+                temp_data["state"]=i["state"]
+                temp_data["district"]=i["district"]
+                context["users"].append(temp_data)
             return render(request,'fundtracker/add_admin_sub.html',context)
     else:
         context = {}
@@ -122,7 +146,8 @@ def addCont(request):
                 'email':data["email"][0],
                 "password":hashing.create_hash(data["password"][0]),
                 "role":"Contractor",
-                "tags":data["tags"],
+                "state":data["state"][0],
+                "district":data["district"][0],
                 "wallet":0
             })
             context=get_user_data(request)
@@ -153,3 +178,6 @@ def view_tran(request):
 
     else:
         return redirect('login')
+
+
+  
