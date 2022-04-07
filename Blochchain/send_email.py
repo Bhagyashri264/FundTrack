@@ -3,6 +3,8 @@ from fastapi import BackgroundTasks
 from fastapi_mail import FastMail,MessageSchema,ConnectionConfig
 from dotenv import load_dotenv
 from pydantic.fields import T
+
+from schemas import send_complaint
 load_dotenv(dotenv_path='.env')
 
 class Envs:
@@ -26,14 +28,24 @@ conf = ConnectionConfig(
     TEMPLATE_FOLDER='./email'
 )
 
-async def send_email_async(subject: str, email_to: str, body_e: dict):
+async def send_email_async(subject: str, email_to: str, body: dict):
     message = MessageSchema(
         subject=subject,
         recipients=[email_to],
-        template_body=body_e,
+        template_body=body,
         subtype='html',
     )
     
     fm = FastMail(conf)
     await fm.send_message(message,template_name="email.html")
 
+async def send_complaint_email(subject: str, email_to: str, body: dict):
+    message = MessageSchema(
+        subject=subject,
+        recipients=[email_to],
+        template_body=body,
+        subtype='html',
+    )
+    print(body)
+    fm = FastMail(conf)
+    await fm.send_message(message,template_name="send_complaint.html")

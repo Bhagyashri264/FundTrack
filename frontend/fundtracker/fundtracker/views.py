@@ -8,9 +8,16 @@ from django.template import loader
 import requests
 from bson.objectid import ObjectId
 from . import db
+from django.utils.safestring import mark_safe
 from . import hashing
 import random
+import json
 
+ips=["http://127.0.0.1:8080"]
+headers={
+                    "content-type":"application/json",
+                    "accept": "application/json"
+                }
 def index(request):
     return HttpResponse("Hiiiii")
 
@@ -116,20 +123,30 @@ def make_tran(request):
                 "receiver_id": rec_id,
                 "amount": data["amount"][0],
                 "desp": data["desp"][0],
-                "tags": data["tags"]
+                "purpose": data["purpose"][0],
+                "state": data["state"][0],
+                "district": data["district"][0],
+                "bill_no": data["bill_no"][0],
+                "role":rec_data["role"]
                 }
             headers={
                 "content-type":"application/json",
                 "accept": "application/json"
             }
-            print(body)
+            
             
             if "gensis" in data.keys():
                 res = requests.post("http://127.0.0.1:8080/create_genesis_block",json=body,headers=headers)
-                print(res)
+                print(res.json())
             else:
-                res = requests.post("http://127.0.0.1:8080/add_transaction",json=body,headers=headers)
-                print(res)
+                #res = requests.post("http://127.0.0.1:8080/add_transaction",json=body,headers=headers)
+                for ip in ips:
+                    res = requests.post(ip+"/validate_chain",json=body,headers=headers)
+                    if res == False:
+                        context=get_user_data(request)
+                        return render(request,"fundtracker/make_tran.html",context)
+                for ip in ips:
+                    res = requests.post(ip+"/add_transaction",json=body,headers=headers)
             context=get_user_data(request)
             return render(request,"fundtracker/make_tran.html",context)
         else:
@@ -174,7 +191,6 @@ def view_tran(request):
             tran["amount"]=i["amount"]
             tran["desp"]=i["desp"]
             tran["time"]=i["time"]
-            tran["tags"]=i["tags"]
             context["transaction"].append(tran)
         return render(request,"fundtracker/view_tran.html",context)
 
@@ -183,32 +199,65 @@ def view_tran(request):
 
 
 def guest_login(request):
-    if request.POST:
-        data=dict(request.POST)
-        print(data)
-        print(request.session["otp"])
-        if "otp" in data.keys():
-            if str(data["otp"][0])==str(request.session["otp"]):
+    if request.session.has_key("guest"):
+        if request.POST:
+            data=dict(request.POST)
+            print(data)
+            if "send" in data.keys():
+                
+                body={
+                    "bill_no":data["bill_no"][0],
+                    "desc":data["desc"][0],
+                    "state":data["state"][0],
+                    "district":data["district"][0]
+                }
+                headers={
+                    "content-type":"application/json",
+                    "accept": "application/json"
+                }
+                res = requests.post("http://127.0.0.1:8080/send_complaint",json=body,headers=headers)
                 return render(request,"fundtracker/guest_home.html")
             else:
-                return render(request,"fundtracker/guest.html")
-        else:
-            email=data["email"][0]
-            otp=random.randint(100000,999999)
-            request.session["otp"]=otp
-            body={
-                "email": email,
-                "otp": otp
+                bill_no=data["bill_no"][0]
+                body={
+                    "bill_no":bill_no
                 }
-            headers={
-                "content-type":"application/json",
-                "accept": "application/json"
-            }
-            res = requests.post("http://127.0.0.1:8080/sendotp",json=body,headers=headers)
-            context={
-                "otp":"something",
-                "email":email
-            }
-            return render(request,"fundtracker/guest.html",context)
+                headers={
+                    "content-type":"application/json",
+                    "accept": "application/json"
+                }
+                res = requests.post("http://127.0.0.1:8080/get_tree_from_bill",json=body,headers=headers)
+
+                context={"data":mark_safe(res.json())}
+                return render(request,"fundtracker/guest_home.html",context=context)
+        else:
+            return render(request,"fundtracker/guest_home.html")
     else:
-        return render(request,"fundtracker/guest.html")
+        if request.POST:
+            data=dict(request.POST)
+            if "otp" in data.keys():
+                if str(data["otp"][0])==str(request.session["otp"]):
+                    request.session["guest"]=data["email"]
+                    return render(request,"fundtracker/guest_home.html")
+                else:
+                    return render(request,"fundtracker/guest.html")
+            else:
+                email=data["email"][0]
+                otp=random.randint(100000,999999)
+                request.session["otp"]=otp
+                body={
+                    "email": email,
+                    "otp": otp
+                    }
+                headers={
+                    "content-type":"application/json",
+                    "accept": "application/json"
+                }
+                res = requests.post("http://127.0.0.1:8080/sendotp",json=body,headers=headers)
+                context={
+                    "otp":"something",
+                    "email":email
+                }
+                return render(request,"fundtracker/guest.html",context)
+        else:
+            return render(request,"fundtracker/guest.html")
