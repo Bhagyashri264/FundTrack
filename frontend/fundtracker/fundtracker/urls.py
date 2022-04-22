@@ -28,5 +28,7 @@ urlpatterns = [
     path("addCont/",views.addCont,name="addcont"),
     path("viewTran/",views.view_tran,name="viewtran"),
     path("analysis/",views.analysis,name="analysis"),
-    path("guest/",views.guest_login,name="guest")
+    path("guest/",views.guest_login,name="guest"),
+    path("aboutus/",views.about_us,name="aboutus"),
+    path("updateuser/",views.update_user,name="updateuser")
 ]

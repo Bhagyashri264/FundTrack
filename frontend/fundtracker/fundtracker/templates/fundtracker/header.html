@@ -15,17 +15,10 @@
 </head>
 <body>
     <nav class="main-header navbar navbar-expand navbar-dark navbar-dark">
-        <div class="container">
-          
-            <span class="brand-text font-weight-bold text-white">Fund Tracker</span>
-          
-          <!-- Left navbar links -->
-
-        </div>
-
         <ul class="navbar-nav ml-auto">
+          <li class="nav-item text-white" role="button"><div class="nav-link" >Balance:- {{ wallet }}</div></li>
         <li class="nav-item">
-            <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="{% url 'logout' %}" role="button">
+            <a class="nav-link" data-slide="true" href="{% url 'logout' %}" role="button">
                 
                   Log Out
                 
@@ -101,7 +94,7 @@
           </li>
           {% if role == 'Sub-Admin' or role == 'Admin' %}
           <li class="nav-item">
-            <a href="analysis.html" class="nav-link">
+            <a href="{% url 'analysis' %}" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Analysis
@@ -110,7 +103,7 @@
           </li>
           {% endif %}
           <li class="nav-item">
-            <a href="aboutus.html" class="nav-link">
+            <a href="{% url 'aboutus' %}" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 About

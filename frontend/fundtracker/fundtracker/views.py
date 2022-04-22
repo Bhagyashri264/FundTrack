@@ -1,3 +1,4 @@
+from cmath import exp
 from http.client import HTTPResponse
 from multiprocessing import context
 from multiprocessing.connection import wait
@@ -13,7 +14,7 @@ from . import hashing
 import random
 import json
 
-ips=["http://127.0.0.1:8080"]
+ips=["http://127.0.0.1:8080","http://127.0.0.1:8081"]
 headers={
                     "content-type":"application/json",
                     "accept": "application/json"
@@ -21,15 +22,18 @@ headers={
 def index(request):
     return HttpResponse("Hiiiii")
 
-def analysis():
-    
-    return render('fundtracker/analysis.html')
+def analysis(request):
+    context=get_user_data(request)
+    return render(request,'fundtracker/analysis.html',context)
 
+def about_us(request):
+    context=get_user_data(request)
+    return render(request,'fundtracker/aboutus.html',context)
 
 def get_user_data(request):
     email=request.session["email"]
     user = db.users.find_one({"email": {"$eq": email}})
-    context={"email":email,"role":user["role"],"id":str(user["_id"])}
+    context={"email":email,"role":user["role"],"id":str(user["_id"]),"wallet":user["wallet"]}
     return context
 
 def login(request):
@@ -74,26 +78,31 @@ def add_user(request):
         if request.POST:
             data=dict(request.POST)
             del data["csrfmiddlewaretoken"]
-            db.users.insert_one({
-                'name':data["name"][0],
-                'email':data["email"][0],
-                "password":hashing.create_hash(data["password"][0]),
-                "role":data["role"][0],
-                "state":data["state"][0],
-                "district":data["district"][0],
-                "wallet":0
-            })
-            context=get_user_data(request)
-            context["users"]=[]
-            data=db.users.find()
-            for i in data:
-                temp_data={}
-                temp_data["name"]=i["name"]
-                temp_data["email"]=i["email"]
-                temp_data["state"]=i["state"]
-                temp_data["district"]=i["district"]
-                context["users"].append(temp_data)
-            return render(request,'fundtracker/add_admin_sub.html',context)
+            try:
+                db.users.insert_one({
+                    'name':data["name"][0],
+                    'email':data["email"][0],
+                    "password":hashing.create_hash(data["password"][0]),
+                    "role":data["role"][0],
+                    "state":data["state"][0],
+                    "district":data["district"][0],
+                    "wallet":0
+                })
+                context=get_user_data(request)
+                context["users"]=[]
+                data=db.users.find()
+                for i in data:
+                    temp_data={}
+                    temp_data["name"]=i["name"]
+                    temp_data["email"]=i["email"]
+                    temp_data["state"]=i["state"]
+                    temp_data["district"]=i["district"]
+                    context["users"].append(temp_data)
+                    context["alert"]="User Added succesfully"
+                    return render(request,'fundtracker/add_admin_sub.html',context)
+            except:
+                context["alert"]="Something went wrong"
+                return render(request,'fundtracker/add_admin_sub.html',context)
         else:
             context=get_user_data(request)
             context["users"]=[]
@@ -118,10 +127,14 @@ def make_tran(request):
             rec_data=db.users.find_one({"email":{"$eq":data["email"][0]}})
             
             rec_id=str(rec_data["_id"])
+            balance_curr=rec_data["wallet"]
+            if int(context["wallet"])<int(data["amount"][0]) and "gensis" not in data.keys():
+                context["alert"]="Insufficient Balance"
+                return render(request,"fundtracker/make_tran.html",context)
             body={
                 "sender_id": context["id"],
                 "receiver_id": rec_id,
-                "amount": data["amount"][0],
+                "amount": int(data["amount"][0]),
                 "desp": data["desp"][0],
                 "purpose": data["purpose"][0],
                 "state": data["state"][0],
@@ -136,18 +149,27 @@ def make_tran(request):
             
             
             if "gensis" in data.keys():
-                res = requests.post("http://127.0.0.1:8080/create_genesis_block",json=body,headers=headers)
-                print(res.json())
+                for ip in ips:
+
+                    res = requests.post(ip+"/create_genesis_block",json=body,headers=headers)
+                res=db.users.update_one({"email":{"$eq":context["email"]}},{"$set":{"wallet":context["wallet"]+int(data["amount"][0])}})
             else:
                 #res = requests.post("http://127.0.0.1:8080/add_transaction",json=body,headers=headers)
                 for ip in ips:
                     res = requests.post(ip+"/validate_chain",json=body,headers=headers)
-                    if res == False:
+                    print(res.json())
+                    if res.json() != True:
                         context=get_user_data(request)
+                        context["alert"]="Transaction is failed!!! due to manpilution of records contact to admin"
                         return render(request,"fundtracker/make_tran.html",context)
+                        
                 for ip in ips:
                     res = requests.post(ip+"/add_transaction",json=body,headers=headers)
+                res=db.users.update_one({"email":{"$eq":context["email"]}},{"$set":{"wallet":context["wallet"]-int(data["amount"][0])}})
+                res=db.users.update_one({"email":{"$eq":rec_data["email"]}},{"$set":{"wallet":int(balance_curr)+int(data["amount"][0])}})
             context=get_user_data(request)
+            
+            context["alert"]="Transaction is completed"
             return render(request,"fundtracker/make_tran.html",context)
         else:
             context=get_user_data(request)
@@ -261,3 +283,11 @@ def guest_login(request):
                 return render(request,"fundtracker/guest.html",context)
         else:
             return render(request,"fundtracker/guest.html")
+
+def update_user(request):
+    if request.GET:
+        data=dict(request.GET)
+        email=data["email"][0]
+        context=get_user_data(request)
+        rec_data=db.users.find_one({"email":{"$eq":email}})
+        print(rec_data)

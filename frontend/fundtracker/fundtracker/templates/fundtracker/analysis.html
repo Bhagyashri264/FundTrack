@@ -1,13 +1,7 @@
-
-<html>
-<head>
-    <title>About Us</title>
-    <h1><center>About Us</center></h1>
-    
-</head>
-<body>
-    <iframe src="C:/Users/Raviraj/Documents/GitHub/FundTrack/frontend/fundtracker/fundtracker/templates/fundtracker/Dashboard 1.png" title="description"></iframe>
-
-</body>
-</html>
-
+{% extends 'fundtracker/header.html' %}
+{% block main%}
+    {% load static %}
+    <div class="content-wrapper">
+        <img src="{% static 'fundtracker\Dashboard1.png' %}" height="100%" width="100%">
+    </div>
+    {% endblock %}

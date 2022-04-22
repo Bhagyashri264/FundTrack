@@ -1,6 +1,9 @@
 {% extends 'fundtracker/header.html' %}
 {% block main%}
 <script type="text/javascript">
+    {% if alert %}
+        alert("{{ alert }}");
+    {% endif %}
     $(document).ready(function(){
     var AndraPradesh = ["NA","Anantapur","Chittoor","East Godavari","Guntur","Kadapa","Krishna","Kurnool","Prakasam","Nellore","Srikakulam","Visakhapatnam","Vizianagaram","West Godavari"];
     var ArunachalPradesh = ["NA","Anjaw","Changlang","Dibang Valley","East Kameng","East Siang","Kra Daadi","Kurung Kumey","Lohit","Longding","Lower Dibang Valley","Lower Subansiri","Namsai","Papum Pare","Siang","Tawang","Tirap","Upper Siang","Upper Subansiri","West Kameng","West Siang","Itanagar"];

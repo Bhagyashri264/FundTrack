@@ -198,7 +198,7 @@
 
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="{% url 'logout' %}" role="button">
+                <a class="nav-link" data-slide="true" href="{% url 'logout' %}" role="button">
                 
                   Log Out
                 
@@ -219,7 +219,9 @@
     </form>
     <input type="text" id="demo" value="{{ data }}" hidden />
     <div id="chart"></div>
-    <hr>
+    <hr><center>
+    <div class="row-cols-md-4 m-auto" >
+        <center><h3>Grievance Form</h3><center>
     <form method="POST">
         {% csrf_token %} 
         <div class="card-body">
@@ -231,9 +233,9 @@
                 <label for="desc">Enter Description</label>
                 <input type="text" class="form-control" name="desc" id="desc" placeholder="Enter Description" required=true>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group">
                 <label for="inputState">State</label>
-                <select class="form-control" id="inputState" name="state" required=true>
+                <select class="form-control select2" id="inputState" name="state" required=true>
                                     <option value="SelectState" selected disabled hidden>---Select State---</option>
                                     <option value="Andra Pradesh">Andra Pradesh</option>
                                     <option value="Arunachal Pradesh">Arunachal Pradesh</option>
@@ -274,7 +276,7 @@
                                     <option value="Pondicherry">Pondicherry</option>
                                   </select>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group">
                 <label for="inputDistrict">District</label>
                 <select class="form-control" id="inputDistrict" name="district" required=true>
                     <option value="" selected disabled hidden>-- select one -- </option>
@@ -284,6 +286,7 @@
         </div>
 
     </form>
+</div></center>
 
 
 </body>

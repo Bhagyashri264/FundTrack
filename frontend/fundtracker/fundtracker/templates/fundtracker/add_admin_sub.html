@@ -5,6 +5,9 @@
 {% block main%}
 
 <script type="text/javascript">
+    {% if alert %}
+        alert("{{ alert }}");
+    {% endif %}
     $(document).ready(function(){
     var AndraPradesh = ["Anantapur","Chittoor","East Godavari","Guntur","Kadapa","Krishna","Kurnool","Prakasam","Nellore","Srikakulam","Visakhapatnam","Vizianagaram","West Godavari"];
     var ArunachalPradesh = ["Anjaw","Changlang","Dibang Valley","East Kameng","East Siang","Kra Daadi","Kurung Kumey","Lohit","Longding","Lower Dibang Valley","Lower Subansiri","Namsai","Papum Pare","Siang","Tawang","Tirap","Upper Siang","Upper Subansiri","West Kameng","West Siang","Itanagar"];
@@ -281,7 +284,6 @@
         <th>EmailId</th>
         <th>State</th>
         <th>District</th>
-        <th>Action</th>
 
         </tr>
         </thead>
@@ -299,9 +301,6 @@
         <td>
         {{ user.district }}
         </td>
-        <td>
-            <button class='btn btn-info btn-xs btn-edit'>Edit</button><button class='btn btn-danger btn-xs btn-delete'>Delete</button>
-            </td>
         </tr>
          {% endfor %}
         </tbody>

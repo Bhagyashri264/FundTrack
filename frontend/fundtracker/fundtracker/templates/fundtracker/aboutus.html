@@ -1,18 +1,7 @@
-<html>
-<head>
-    <title>About Us</title>
-    <h1><center>About Us</center></h1>
-    <style>
-        body
-        {
-            background-color: #e5e4e2;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        
-    </style>
-</head>
-<body>
-    <p>We try to develop a system that will help to overcome corruption.	Our	system	will maintain the records of transactions that are immutable and shared across many regions.
+{% extends 'fundtracker/header.html' %}
+{% block main%}
+<div class="content-wrapper">
+    <p style="padding:10px">We try to develop a system that will help to overcome corruption.	Our	system	will maintain the records of transactions that are immutable and shared across many regions.
         If someone wants to change records he/she will not be able to change the record.
         We try to fill the gap between government and people. Using our system, common people will be monitoring funds and track the record. Our assumption is we can overcome at least 30 percentage of corruption if we develop such a system.
         India is 86th rank in corruption worldwide. This motivates to build a system that can prevent corruption in India. So India will decrease rank as much as possible. Also because of the UP government, the UP government developed a system to prevent corruption in the land sector.
@@ -22,5 +11,5 @@
         Its responsibility is to track all the funds send through the hierarchy so that it is transparent to all the citizens around.
         As transparency will be maintained, it will easier for the citizens to trust the process and monitor every fund.
     </p>
-</body>
-</html>
+</div> 
+    {% endblock %}

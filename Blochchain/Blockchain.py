@@ -115,7 +115,7 @@ class Blockchain:
                 for c in cont_trans:
                     temp_list=[]
                     temp_list.append({
-                        "v":c["purpose"],
+                        "v":c["purpose"]+d["district"],
                         "f":str(c["purpose"])+"<br>"+str(c["amount"])
                     })
                     temp_list.append(d["district"])
