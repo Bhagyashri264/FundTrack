@@ -65,6 +65,14 @@ def logout(request):
     context = {}
     return redirect('login')
 
+def logout_guest(request):
+    try:
+        del request.session["guest"]
+    except:
+        pass
+    context = {}
+    return redirect('guest')
+
 def home(request):
     if request.session.has_key("email"):
         context=get_user_data(request)
@@ -203,12 +211,23 @@ def view_tran(request):
     if request.session.has_key("email"):
         context=get_user_data(request)
         context["transaction"]=[]
-        data=db.tran.find({"sender_id":context["id"]}).sort("time",-1)
+        if context["role"]=="Contractor":
+            data=db.tran.find({"receiver_id":context["id"]}).sort("time",-1)
+        else:
+            data=db.tran.find({"sender_id":context["id"]}).sort("time",-1)
         for i in data:
-            print(i["receiver_id"])
-            rec_data= db.users.find_one({"_id":{"$eq":ObjectId(str(i["receiver_id"]))}})
+            print(i["_id"])
+            if context["role"]=="Contractor":
+                rec_data= db.users.find_one({"_id":{"$eq":ObjectId(str(i["sender_id"]))}})
+            else:
+                rec_data= db.users.find_one({"_id":{"$eq":ObjectId(str(i["receiver_id"]))}})
             print(rec_data)
             tran={}
+            if "status" in i.keys():
+                tran["status"]=i["status"]
+            else:
+                tran["status"]="Not Started"
+            tran["id"]=str(i["_id"])
             tran["to"]=rec_data["name"]
             tran["amount"]=i["amount"]
             tran["desp"]=i["desp"]
@@ -291,3 +310,12 @@ def update_user(request):
         context=get_user_data(request)
         rec_data=db.users.find_one({"email":{"$eq":email}})
         print(rec_data)
+
+def changestatus(request):
+    if request.GET:
+        data=dict(request.GET)
+        id = data["id"][0]
+        status = data["status"][0]
+        res=db.tran.update_one({"_id":{"$eq":ObjectId(str(id))}},{"$set":{"status":status}})
+        context=get_user_data(request)
+        return redirect('viewtran')

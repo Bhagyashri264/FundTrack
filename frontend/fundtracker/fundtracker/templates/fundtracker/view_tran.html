@@ -9,11 +9,15 @@
         <table class="table table-striped table-valign-middle">
         <thead>
         <tr>
-        <th>To</th>
+            {% if role == 'Contractor' %}
+            <th>From</th>
+            {% else %}
+            <th>To</th>
+            {% endif %}
         <th>Amount</th>
         <th>Date</th>
         <th>Descption</th>
-        <th>Tags</th>
+        <th>Action/Status</th>
 
         </tr>
         </thead>
@@ -32,7 +36,18 @@
         {{ tran.desp }}
         </td>
         <td>
-            {{ tran.tags }}
+            {% if role == 'Contractor' %}
+                <form action="{% url 'changestatus' %}" method="get">
+                    <select name="status">
+                        <option>Not Started</option>
+                        <option>Inprogess</option>
+                        <option>Completed</option>
+                    </select>
+                    <input type="hidden" value="{{ tran.id }}" name="id">
+                    <input type="submit" name="submit">
+                    /{{ tran.status }}
+                </form>
+            {% endif %}
             </td>
         </tr>
          {% endfor %}
